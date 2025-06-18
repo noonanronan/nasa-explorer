@@ -4,32 +4,37 @@ import axios from 'axios';
 function App() {
   const [apod, setApod] = useState(null); // Store the NASA APOD data (Astronomy Picture of the Day)
   const [marsPhotos, setMarsPhotos] = useState([]); // Store Mars pictures
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
 
   useEffect(() => {
-    // Fetch APOD data from backend on component load
-    axios.get('http://localhost:5000/api/apod')
-      .then(response => {
-        setApod(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching apod:', error);
-      });
-  }, []); // Empty array to	run the effect only once
+  const fetchData = async () => {
+    try {
+      const [apodResponse, marsResponse] = await Promise.all([
+        // Fetch APOD & Mars data from backend on component load
+        axios.get('http://localhost:5000/api/apod'),
+        axios.get('http://localhost:5000/api/mars')
+      ]);
+      setApod(apodResponse.data);
+      setMarsPhotos(marsResponse.data);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setError('Failed to load data. Please try again later.');
+      setLoading(false);
+    }
+  };
 
-  useEffect(() => {
-    // Fetch Mrs pic data from backend on component load
-    axios.get('http://localhost:5000/api/mars')
-      .then(response => {
-        setMarsPhotos(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching apod:', error);
-      });
-  }, []); // Empty array to	run the effect only once
+  fetchData();
+}, []); // Empty array to	run the effect only once
+
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
+      {loading && <p>Loading data...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
       <h1>NASA Astronomy Picture of the Day</h1>
 
       {apod && (
@@ -41,7 +46,7 @@ function App() {
       )}
 
       <h1>Mars Rover Photos (Sol 1000)</h1>
-
+      {/* Only 10 photos */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
         {marsPhotos.slice(0, 10).map((photo) => (
           <div key={photo.id} style={{ width: '300px' }}>
