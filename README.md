@@ -26,4 +26,14 @@ node index.js
 ```
 
 Frontend setup:
+```bash
+cd frontend
+npm install
+npm start
+```
 
+## Features implemented 
+● Astronomy Picture of the Day (APOD)
+● Mars Rover Photos
+●
+●
