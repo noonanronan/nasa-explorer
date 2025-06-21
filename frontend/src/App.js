@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+
 
 function App() {
   const [apod, setApod] = useState(null); // Store the NASA APOD data (Astronomy Picture of the Day)
@@ -8,7 +10,8 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState(''); // Search for Mars
-  const [epicSearchTerm, setEpicSearchTerm] = useState('');
+  const [neoData, setNeoData] = useState([]);
+
 
 
   
@@ -16,15 +19,17 @@ function App() {
   useEffect(() => {
   const fetchData = async () => {
     try {
-      const [apodResponse, marsResponse, epicResponse] = await Promise.all([
+      const [apodResponse, marsResponse, epicResponse, neoResponse] = await Promise.all([
         // Fetch APOD & Mars data from backend on component load
         axios.get('http://localhost:5000/api/apod'),
         axios.get('http://localhost:5000/api/mars'),
         axios.get('http://localhost:5000/api/epic'),
+        axios.get('http://localhost:5000/api/neo'),
       ]);
       setApod(apodResponse.data);
       setMarsPhotos(marsResponse.data);
       setEpicPhotos(epicResponse.data);
+      setNeoData(neoResponse.data);
       setLoading(false);
     } catch (err) {
       console.error('Error fetching data:', err);
@@ -36,6 +41,11 @@ function App() {
   fetchData();
 }, []); // Empty array to	run the effect only once
 
+// Flatten NEO data (NASA groups by date)
+const neoChartData = Object.values(neoData).flat().slice(0, 10).map((asteroid) => ({
+  name: asteroid.name,
+  diameter: (asteroid.estimated_diameter.meters.estimated_diameter_max / 1000).toFixed(3), // Using km to visualize 
+}));
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
@@ -119,6 +129,22 @@ function App() {
           );
         })}
       </div>
+
+      <h1>Near Earth Objects</h1>
+      <p>Showing estimated max diameters in meters of 10 asteroids near earth</p>
+
+      <div style={{ width: '100%', height: 400 }}>
+        <ResponsiveContainer>
+          <BarChart data={neoChartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis label={{ value: 'Diameter (km)', angle: -90, position: 'insideLeft' }} />
+            <Tooltip />
+            <Bar dataKey="diameter" fill="#8884d8" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
     </div>
   );
 }

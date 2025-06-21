@@ -43,6 +43,25 @@ app.get('/api/epic', async (req, res) => {
     }
 });
 
+app.get('/api/neo', async (req, res) => {
+    try {
+        const today = new Date();
+        const endDate = today.toISOString().split('T')[0];
+
+        const pastDate = new Date(today);
+        pastDate.setDate(today.getDate() - 3); // 3 days
+        const startDate = pastDate.toISOString().split('T')[0];
+
+        const response = await axios.get(
+            `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=${process.env.NASA_API_KEY}`
+        );
+        res.json(response.data.near_earth_objects);
+    } catch (error) {
+        console.error('NEO API Error:', error.message);
+        res.status(500).json({ message: 'Error fetching NEO data' });
+    }
+});
+
 
 
 // Start the backend server
