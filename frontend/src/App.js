@@ -4,9 +4,13 @@ import axios from 'axios';
 function App() {
   const [apod, setApod] = useState(null); // Store the NASA APOD data (Astronomy Picture of the Day)
   const [marsPhotos, setMarsPhotos] = useState([]); // Store Mars pictures
-  const [epicPhotos, setEpicPhotos] = useState([]);
+  const [epicPhotos, setEpicPhotos] = useState([]); // Epic Camera photos
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(''); // Search for Mars
+  const [epicSearchTerm, setEpicSearchTerm] = useState('');
+
+
   
 
   useEffect(() => {
@@ -49,9 +53,21 @@ function App() {
       )}
 
       <h1>Mars Rover Photos (Sol 1000)</h1>
+
+      <input
+        type="text"
+        placeholder="Search by camera name (eg. MAST,FHAZ...)"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
+        style={{ padding: '0.5rem', marginBottom: '1rem', width: '100%', maxWidth: '400px' }}
+      />
+
       {/* Only 10 photos */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-        {marsPhotos.slice(0, 10).map((photo) => (
+        {marsPhotos
+          .filter(photo => photo.camera.name.includes(searchTerm))
+          .slice(0, 10)
+          .map((photo) => (
           <div key={photo.id} style={{ width: '300px' }}>
             <img
               src={photo.img_src}
@@ -69,11 +85,25 @@ function App() {
 
       <h1>EPIC Earth Images</h1>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-        {epicPhotos.slice(0, 10).map((photo) => {
-          const dateParts = photo.date.split(" ")[0].split("-");
-          const imageUrl = `https://epic.gsfc.nasa.gov/archive/natural/${dateParts[0]}/${dateParts[1]}/${dateParts[2]}/png/${photo.image}.png`;
+      <input
+        type="text"
+        placeholder="Search EPIC images by time (eg. 00:13:03)"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ padding: '0.5rem', marginBottom: '1rem', width: '100%', maxWidth: '400px' }}
+      />
 
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+        {epicPhotos
+          .filter(photo => {
+            const time = photo.date.split(' ')[1]; // get "HH:MM:SS"
+            return time.includes(searchTerm);
+          })
+          .slice(0, 10)
+          .map((photo) => {
+
+            const dateParts = photo.date.split(" ")[0].split("-");
+            const imageUrl = `https://epic.gsfc.nasa.gov/archive/natural/${dateParts[0]}/${dateParts[1]}/${dateParts[2]}/png/${photo.image}.png`;
           return (
             <div key={photo.identifier} style={{ width: '300px' }}>
               <img
