@@ -31,6 +31,20 @@ app.get('/api/mars', async (req, res) => {
     }
 });
 
+app.get('/api/epic', async (req, res) => {
+    try {
+        const response = await axios.get(
+        `https://api.nasa.gov/EPIC/api/natural/images?api_key=${process.env.NASA_API_KEY}`
+        );
+        res.json(response.data);
+    } catch (error) {
+        console.error('EPIC API Error:', error.message);
+        res.status(500).json({ message: 'Error fetching EPIC data' });
+    }
+});
+
+
+
 // Start the backend server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

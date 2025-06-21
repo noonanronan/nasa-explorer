@@ -4,20 +4,23 @@ import axios from 'axios';
 function App() {
   const [apod, setApod] = useState(null); // Store the NASA APOD data (Astronomy Picture of the Day)
   const [marsPhotos, setMarsPhotos] = useState([]); // Store Mars pictures
+  const [epicPhotos, setEpicPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  
 
   useEffect(() => {
   const fetchData = async () => {
     try {
-      const [apodResponse, marsResponse] = await Promise.all([
+      const [apodResponse, marsResponse, epicResponse] = await Promise.all([
         // Fetch APOD & Mars data from backend on component load
         axios.get('http://localhost:5000/api/apod'),
-        axios.get('http://localhost:5000/api/mars')
+        axios.get('http://localhost:5000/api/mars'),
+        axios.get('http://localhost:5000/api/epic'),
       ]);
       setApod(apodResponse.data);
       setMarsPhotos(marsResponse.data);
+      setEpicPhotos(epicResponse.data);
       setLoading(false);
     } catch (err) {
       console.error('Error fetching data:', err);
@@ -62,6 +65,29 @@ function App() {
             </p>
           </div>
         ))}
+      </div>
+
+      <h1>EPIC Earth Images</h1>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+        {epicPhotos.slice(0, 10).map((photo) => {
+          const dateParts = photo.date.split(" ")[0].split("-");
+          const imageUrl = `https://epic.gsfc.nasa.gov/archive/natural/${dateParts[0]}/${dateParts[1]}/${dateParts[2]}/png/${photo.image}.png`;
+
+          return (
+            <div key={photo.identifier} style={{ width: '300px' }}>
+              <img
+                src={imageUrl}
+                alt={photo.caption}
+                style={{ width: '100%' }}
+              />
+              <p>
+                <strong>Caption:</strong> {photo.caption}<br />
+                <strong>Date:</strong> {photo.date}
+              </p>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
