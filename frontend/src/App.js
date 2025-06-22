@@ -11,10 +11,8 @@ function App() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState(''); // Search for Mars
   const [neoData, setNeoData] = useState([]);
-
-
-
-  
+  const [mediaResults, setMediaResults] = useState([]);
+  const [mediaSearch, setMediaSearch] = useState("moon"); // default search
 
   useEffect(() => {
   const fetchData = async () => {
@@ -40,6 +38,22 @@ function App() {
 
   fetchData();
 }, []); // Empty array to	run the effect only once
+
+useEffect(() => {
+  const fetchMedia = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/media?q=${mediaSearch}`);
+      setMediaResults(response.data);
+    } catch (err) {
+      console.error("Error fetching media:", err);
+    }
+  };
+
+  if (mediaSearch.trim()) {
+    fetchMedia();
+  }
+}, [mediaSearch]);
+
 
 // Flatten NEO data (NASA groups by date)
 const neoChartData = Object.values(neoData).flat().slice(0, 10).map((asteroid) => ({
@@ -144,6 +158,31 @@ const neoChartData = Object.values(neoData).flat().slice(0, 10).map((asteroid) =
           </BarChart>
         </ResponsiveContainer>
       </div>
+
+        <h1>NASA Image and Video Library</h1>
+        
+        <input
+          type="text"
+          placeholder="Search for NASA images (e.g., moon, Mars)"
+          value={mediaSearch}
+          onChange={(e) => setMediaSearch(e.target.value)}
+          style={{ padding: '0.5rem', marginBottom: '1rem', width: '100%', maxWidth: '400px' }}
+        />
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+          {mediaResults.slice(0, 10).map((item, idx) => (
+            <div key={idx} style={{ width: '300px' }}>
+              <img
+                src={item.thumbnail}
+                alt={item.title}
+                style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
+              />
+              <p><strong>{item.title}</strong></p>
+              <p>{item.description}</p>
+              <p><small>{item.date_created}</small></p>
+            </div>
+          ))}
+        </div>
 
     </div>
   );

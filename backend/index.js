@@ -62,6 +62,31 @@ app.get('/api/neo', async (req, res) => {
     }
 });
 
+app.get('/api/media', async (req, res) => {
+  try {
+    const query = req.query.q || 'moon'; // default to "moon"
+    const response = await axios.get(`https://images-api.nasa.gov/search?q=${query}&media_type=image`);
+    const items = response.data.collection.items;
+
+    // Map results to essential info
+    const results = items.map(item => {
+      const data = item.data[0];
+      const links = item.links?.[0];
+      return {
+        title: data.title,
+        description: data.description,
+        date_created: data.date_created,
+        thumbnail: links?.href || '',
+      };
+    });
+
+    res.json(results);
+  } catch (error) {
+    console.error('Media API Error:', error.message);
+    res.status(500).json({ message: 'Error fetching media' });
+  }
+});
+
 
 
 // Start the backend server
