@@ -38,6 +38,7 @@ npm start
 ● Mars Rover Photos
 ● EPIC Earth Images
 ● Near Earth Object (NEO) Visualization
+● Media Library
 ● Loading & Error Handling
 ● Responsive Design
 
