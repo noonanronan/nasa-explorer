@@ -67,17 +67,20 @@ app.get('/api/epic', async (req, res) => {
 // Near Earth Objects (asteroids)
 app.get('/api/neo', async (req, res) => {
     try {
-        // Get today and 3 days ago (for date range)
+        // Get the number of days back from query (default to 3, max 7 due to NASA API limit)
+        const daysBack = Math.min(parseInt(req.query.days) || 3, 7);
+
         const today = new Date();
         const endDate = today.toISOString().split('T')[0];
 
         const pastDate = new Date(today);
-        pastDate.setDate(today.getDate() - 3); // 3 days
+        pastDate.setDate(today.getDate() - daysBack);
         const startDate = pastDate.toISOString().split('T')[0];
 
         const response = await axios.get(
             `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=${process.env.NASA_API_KEY}`
         );
+
         res.json(response.data.near_earth_objects); // Send NEO data
     } catch (error) {
         console.error('NEO API Error:', error.message);
