@@ -91,28 +91,58 @@ app.get('/api/neo', async (req, res) => {
 // NASA Image and Video Library
 app.get('/api/media', async (req, res) => {
   try {
-    const query = req.query.q || 'moon'; // If no search term, default to "moon"
-    const response = await axios.get(`https://images-api.nasa.gov/search?q=${query}&media_type=image`);
+    const query = req.query.q || 'moon'; // Default search term
+    const response = await axios.get(`https://images-api.nasa.gov/search?q=${query}&media_type=image,video`);
     const items = response.data.collection.items;
 
-    // Map results to essential info
-    const results = items.map(item => {
-      const data = item.data[0];
-      const links = item.links?.[0];
-      return {
-        title: data.title,
-        description: data.description,
-        date_created: data.date_created,
-        thumbnail: links?.href || '',
-      };
-    });
+    const results = await Promise.all(
+      items.map(async (item) => {
+        const data = item.data[0];
+        const mediaType = data.media_type;
+        const nasaId = data.nasa_id;
+        let thumbnail = item.links?.[0]?.href || '';
+        let url = thumbnail; // Default to image thumbnail for image media types
 
-    res.json(results);
+        if (mediaType === 'video') {
+          try {
+            const assetRes = await axios.get(`https://images-api.nasa.gov/asset/${nasaId}`);
+            const allAssets = assetRes.data.collection.items;
+
+            // Find the first .mp4 asset
+            const mp4Asset = allAssets.find(asset => asset.href.endsWith('.mp4'));
+
+            if (mp4Asset) {
+              url = mp4Asset.href;
+              thumbnail = allAssets.find(asset => asset.href.endsWith('.jpg'))?.href || thumbnail;
+            } else {
+              return null; // Skip this video if no .mp4 file is found
+            }
+          } catch (err) {
+            console.warn(`Could not fetch video asset for ${nasaId}`);
+            return null; // Skip this video if asset fetch fails
+          }
+        }
+
+        return {
+          title: data.title,
+          description: data.description,
+          date_created: data.date_created,
+          media_type: mediaType,
+          thumbnail,
+          url,
+        };
+      })
+    );
+
+    const cleanedResults = results.filter(Boolean); // Remove nulls (invalid videos)
+    res.json(cleanedResults);
+
   } catch (error) {
     console.error('Media API Error:', error.message);
     res.status(500).json({ message: 'Error fetching media' });
   }
 });
+
 
 // Start the backend server
 app.listen(PORT, () => {
