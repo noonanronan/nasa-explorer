@@ -14,7 +14,7 @@ app.use(cors()); // Allow requests from the frontend (running on a different por
 // Astronomy Picture of the Day (APOD)
 app.get('/api/apod', async (req, res) => {
   try {
-    const { date } = req.query; // Get optional ?date param
+    const { date } = req.query; // Get optional date param
     const url = `https://api.nasa.gov/planetary/apod?api_key=${process.env.NASA_API_KEY}` +
                 (date ? `&date=${date}` : '');
 
@@ -29,15 +29,20 @@ app.get('/api/apod', async (req, res) => {
 
 // Mars Rover Photos (from Sol 1000)
 app.get('/api/mars', async (req, res) => {
-    try{
-        const response = await axios.get(
-            `https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=1000&api_key=${process.env.NASA_API_KEY}` 
-        );
-        res.json(response.data.photos); // Send only the photo array
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching data for Mars rover'})
-    }
+  try {
+    const sol = req.query.sol || 1000; // Default to 1000 
+
+    const response = await axios.get(
+      `https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=${sol}&api_key=${process.env.NASA_API_KEY}`
+    );
+
+    res.json(response.data.photos);
+  } catch (error) {
+    console.error('Mars API Error:', error.message);
+    res.status(500).json({ message: 'Error fetching data for Mars rover' });
+  }
 });
+
 
 // EPIC (Earth images from satellite)
 app.get('/api/epic', async (req, res) => {
