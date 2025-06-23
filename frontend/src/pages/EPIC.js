@@ -4,20 +4,47 @@ import axios from 'axios';
 function EPIC() {
   const [epicPhotos, setEpicPhotos] = useState([]); // Stores EPIC Earth images from NASA
   const [searchTerm, setSearchTerm] = useState(''); // Stores the user's search input
+  const [selectedDate, setSelectedDate] = useState(''); // Date selected by user to fetch images for
+  const [loading, setLoading] = useState(false); // Loading state
+  const [error, setError] = useState(null); // Error state
 
-  // Fetch EPIC data when the component loads
+  // Fetch EPIC data when the component loads or when the selectedDate changes
   useEffect(() => {
     const fetchEPIC = async () => {
-      const response = await axios.get('http://localhost:5000/api/epic');
-      setEpicPhotos(response.data); // Save the photos in state
+      try {
+        setLoading(true);
+        setError(null);
+
+        const endpoint = selectedDate
+          ? `http://localhost:5000/api/epic?date=${selectedDate}`
+          : 'http://localhost:5000/api/epic';
+
+        const response = await axios.get(endpoint);
+        setEpicPhotos(response.data); // Save the photos in state
+      } catch (err) {
+        setError('Failed to fetch EPIC images.');
+      } finally {
+        setLoading(false);
+      }
     };
     fetchEPIC();
-  }, []);
+  }, [selectedDate]);
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
       <h1>EPIC Earth Images</h1>
-      
+
+      {/* Date selector to fetch EPIC images for a specific date */}
+      <label style={{ display: 'block', marginBottom: '1rem' }}>
+        <strong>Select a date (YYYY-MM-DD):</strong>
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          style={{ marginLeft: '1rem', padding: '0.3rem' }}
+        />
+      </label>
+
       {/* Search input for filtering by time */}
       <input
         type="text"
@@ -26,6 +53,10 @@ function EPIC() {
         onChange={(e) => setSearchTerm(e.target.value)}
         style={{ padding: '0.5rem', marginBottom: '1rem', width: '100%', maxWidth: '400px' }}
       />
+
+      {/* Show loading or error messages */}
+      {loading && <p>Loading images...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {/* Display a list of filtered EPIC images */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
@@ -44,6 +75,10 @@ function EPIC() {
                   <strong>Caption:</strong> {photo.caption}<br />
                   <strong>Date:</strong> {photo.date}
                 </p>
+                {/* Download image button */}
+                <a href={imageUrl} download target="_blank" rel="noopener noreferrer" style={{ color: '#1a73e8' }}>
+                  Download Image
+                </a>
               </div>
             );
           })}

@@ -26,7 +26,6 @@ app.get('/api/apod', async (req, res) => {
   }
 });
 
-
 // Mars Rover Photos (from Sol 1000)
 app.get('/api/mars', async (req, res) => {
   try {
@@ -43,13 +42,21 @@ app.get('/api/mars', async (req, res) => {
   }
 });
 
-
 // EPIC (Earth images from satellite)
 app.get('/api/epic', async (req, res) => {
     try {
-        const response = await axios.get(
-        `https://api.nasa.gov/EPIC/api/natural/images?api_key=${process.env.NASA_API_KEY}`
-        );
+        const date = req.query.date; // Optional date in YYYY-MM-DD format
+        let url;
+
+        if (date) {
+            // If a date is provided, fetch images for that specific date
+            url = `https://api.nasa.gov/EPIC/api/natural/date/${date}?api_key=${process.env.NASA_API_KEY}`;
+        } else {
+            // Otherwise, fetch the latest available images
+            url = `https://api.nasa.gov/EPIC/api/natural/images?api_key=${process.env.NASA_API_KEY}`;
+        }
+
+        const response = await axios.get(url);
         res.json(response.data); // Send the list of EPIC images
     } catch (error) {
         console.error('EPIC API Error:', error.message);

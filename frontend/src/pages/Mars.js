@@ -8,7 +8,7 @@ function Mars() {
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
 
-  // List of valid camera options
+  // List of camera options
   const cameras = [
     '', 'FHAZ', 'RHAZ', 'MAST', 'CHEMCAM', 'MAHLI', 'MARDI', 'NAVCAM'
   ];
@@ -30,7 +30,7 @@ function Mars() {
     fetchMars();
   }, [sol]);
 
-  // Filter photos based on camera selection
+  // Filter photos based on selected camera
   const filteredPhotos = camera
     ? marsPhotos.filter(photo => photo.camera.name === camera)
     : marsPhotos;
@@ -47,7 +47,6 @@ function Mars() {
         </abbr>{' '}
         {sol})
       </h1>
-
 
       {/* Error and loading messages */}
       {loading && <p>Loading photos...</p>}
