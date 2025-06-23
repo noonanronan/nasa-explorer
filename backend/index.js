@@ -143,7 +143,6 @@ app.get('/api/media', async (req, res) => {
   }
 });
 
-
 // Start the backend server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
