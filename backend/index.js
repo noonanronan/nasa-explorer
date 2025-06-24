@@ -8,6 +8,45 @@ const app = express();
 const PORT = process.env.PORT || 5000; 
 
 app.use(cors()); // Allow requests from the frontend (running on a different port)
+app.use(express.json());
+
+// ******* AI Summarize Function *******
+const summarizeText = async (text) => {
+  try {
+    const response = await axios.post(
+      'https://api.openai.com/v1/chat/completions',
+      {
+        model: 'gpt-3.5-turbo-0125', // Model
+        messages: [
+          { role: 'user', content: `Summarize this for a beginner:\n\n${text}` }
+        ],
+        max_tokens: 100,
+        temperature: 0.5,
+        top_p: 1
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data.choices[0].message.content;
+  } catch (error) {
+    if (error.response) {
+      console.log("Full OpenAI error:", error.response.data); 
+    }
+
+    if (error.response && error.response.status === 429) {
+      console.warn('Too many requests to OpenAI. Try again later.');
+      return ' AI summary limit reached. Please try again later.';
+    } else {
+      console.error('Summarization error:', error.message);
+      return ' AI summary unavailable.';
+    }
+  }
+};
 
 // ******* Routes *******
 
@@ -24,6 +63,18 @@ app.get('/api/apod', async (req, res) => {
     console.error('APOD API Error:', error.message);
     res.status(500).json({ message: 'Error fetching data from NASA API' });
   }
+});
+
+// AI-powered explanation summarizer using OpenAI
+app.post('/api/summarize', async (req, res) => {
+  const { text } = req.body;
+
+  if (!text) {
+    return res.status(400).json({ message: 'Missing text in request body' });
+  }
+
+  const summary = await summarizeText(text);
+  res.json({ summary });
 });
 
 // Mars Rover Photos (from Sol 1000)

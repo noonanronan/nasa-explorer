@@ -6,6 +6,7 @@ function APOD() {
   const [apod, setApod] = useState(null);
   const [loading, setLoading] = useState(true); // Show loading state
   const [error, setError] = useState(null); // Show error if request fails
+  const [summary, setSummary] = useState(''); // Store AI summary
 
   // Function to generate a random date string in YYYY-MM-DD format
   const getRandomDate = () => {
@@ -16,9 +17,21 @@ function APOD() {
     return randomDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
   };
 
+  // Function to fetch AI-generated summary for the explanation
+  const summarizeExplanation = async (text) => {
+    try {
+      const res = await axios.post('http://localhost:5000/api/summarize', { text });
+      setSummary(res.data.summary);
+    } catch {
+      setSummary('AI summary unavailable.');
+    }
+  };
+
   // Fetch APOD data from the backend, optional custom date for random APODs
   const fetchAPOD = async (customDate = '') => {
     try {
+      setLoading(true);
+      setSummary('');
       const response = await axios.get(
         `http://localhost:5000/api/apod${customDate ? `?date=${customDate}` : ''}` // Include date param if passed
       );
@@ -60,14 +73,36 @@ function APOD() {
             ></iframe>
           )}
 
-          {/* Show the explanation text */}
-          <p style={{ textAlign: 'justify' }}>{apod.explanation}</p>
+          {/* Show full explanation */}
+          <p style={{ textAlign: 'justify' }}><strong>Explanation:</strong> {apod.explanation}</p>
+
+          {/* Button to generate AI summary on demand */}
+          <button
+            onClick={() => summarizeExplanation(apod.explanation)}
+            style={{
+              marginTop: '1rem',
+              padding: '0.5rem 1rem',
+              backgroundColor: '#ffc107',
+              color: '#000',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Summarize Explanation
+          </button>
+
+          {/* Show AI summary if available */}
+          {summary && (
+            <p style={{ marginTop: '1rem', background: '#fff3cd', padding: '1rem', borderRadius: '6px' }}>
+              <strong>AI Summary:</strong> {summary}
+            </p>
+          )}
 
           {/* Button to load a random APOD */}
           <button
             onClick={() => {
               const randomDate = getRandomDate();
-              setLoading(true);
               fetchAPOD(randomDate);
             }}
             style={{
