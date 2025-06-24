@@ -24,7 +24,7 @@ cd backend
 npm install
 # Create a .env file and add your NASA_API_KEY:
 # NASA_API_KEY=your_nasa_api_key
-node index.js
+node server.js
 ```
 
 Frontend setup:
@@ -47,6 +47,8 @@ Displays 10 nearby asteroids with their estimated diameters visualized using a b
 Search NASA’s image and video library. Clicking a result opens a modal preview (with support for video or image).
 ● **Home Page Enhancements**
 Stylish layout with FontAwesome icons, improved descriptions, and accessible formatting.
+● **AI Summary Feature**
+uses OpenAI to summarize complex APOD explanations for beginners (with on demand summarization)
 
 
 ## NASA API
@@ -64,3 +66,18 @@ You must register at https://api.nasa.gov to obtain your free API key and set it
 ● Real API integration with real-time space data
 
 ● Modular code and organized structure
+
+## Testing
+**Manual Testing**
+All APIs and features were tested in the browser and using curl/Postman
+
+Checked for:
+● Proper data rendering
+● Error handling (e.g. API errors, missing data)
+● AI summary API usage and fallbacks
+
+**Automated Testing** 
+added a backend unit test using Jest to ensure the /api/summarize route consistently returns a valid summary from the OpenAI API.
+This test helps validate core AI functionality independently from the frontend and ensures reliability during further development.
+
+To run backend tests:
