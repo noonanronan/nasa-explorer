@@ -51,3 +51,16 @@ Stylish layout with FontAwesome icons, improved descriptions, and accessible for
 
 ## NASA API
 You must register at https://api.nasa.gov to obtain your free API key and set it in your .env file.
+
+## Highlights
+● Clean UI with FontAwesome icons
+
+● Responsive design across screen sizes
+
+● User interactivity with search, filters, and modals
+
+● Error and loading state handling
+
+● Real API integration with real-time space data
+
+● Modular code and organized structure
