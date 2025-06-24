@@ -22,7 +22,8 @@ Backend setup
 ```bash
 cd backend
 npm install
-# Add your NASA_API_KEY to .env
+# Create a .env file and add your NASA_API_KEY:
+# NASA_API_KEY=your_nasa_api_key
 node index.js
 ```
 
@@ -34,13 +35,19 @@ npm start
 ```
 
 ## Features implemented 
-● Astronomy Picture of the Day (APOD)
-● Mars Rover Photos
-● EPIC Earth Images
-● Near Earth Object (NEO) Visualization
-● Media Library
-● Loading & Error Handling
-● Responsive Design
+● **APOD (Astronomy Picture of the Day)**
+View the daily space photo with title, explanation, and a button to view a random one.
+● **Mars Rover Photos**
+Filter by camera and sol (Martian day), with dynamic input and tooltips explaining sol.
+● **EPIC (Earth Polychromatic Imaging Camera)**
+View Earth images from the DSCOVR satellite with time-based search.
+● **NEO (Near-Earth Objects)**
+Displays 10 nearby asteroids with their estimated diameters visualized using a bar chart.
+● **NASA Media Library**
+Search NASA’s image and video library. Clicking a result opens a modal preview (with support for video or image).
+● **Home Page Enhancements**
+Stylish layout with FontAwesome icons, improved descriptions, and accessible formatting.
+
 
 ## NASA API
 You must register at https://api.nasa.gov to obtain your free API key and set it in your .env file.
