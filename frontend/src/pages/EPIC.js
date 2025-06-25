@@ -16,9 +16,8 @@ function EPIC() {
         setError(null);
 
         const endpoint = selectedDate
-          ? `http://localhost:5000/api/epic?date=${selectedDate}`
-          : 'http://localhost:5000/api/epic';
-
+          ? `${process.env.REACT_APP_API_URL}/api/epic?date=${selectedDate}`
+          : `${process.env.REACT_APP_API_URL}/api/epic`;
         const response = await axios.get(endpoint);
         setEpicPhotos(response.data); // Save the photos in state
       } catch (err) {

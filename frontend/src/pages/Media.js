@@ -14,7 +14,7 @@ function Media() {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(`http://localhost:5000/api/media?q=${mediaSearch}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/media?q=${mediaSearch}`);
         setMediaResults(response.data);
       } catch (err) {
         setError("Failed to load media content.");
