@@ -20,7 +20,7 @@ function APOD() {
   // Function to fetch AI-generated summary for the explanation
   const summarizeExplanation = async (text) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/summarize', { text });
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/summarize`, { text });
       setSummary(res.data.summary);
     } catch {
       setSummary('AI summary unavailable.');
@@ -33,7 +33,7 @@ function APOD() {
       setLoading(true);
       setSummary('');
       const response = await axios.get(
-        `http://localhost:5000/api/apod${customDate ? `?date=${customDate}` : ''}` // Include date param if passed
+        `${process.env.REACT_APP_API_URL}/api/apod${customDate ? `?date=${customDate}` : ''}`
       );
       setApod(response.data); // Save the APOD data
       setLoading(false); // Hide loading
