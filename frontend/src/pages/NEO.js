@@ -14,7 +14,7 @@ function NEO() {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(`http://localhost:5000/api/neo?days=${daysBack}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/neo?days=${daysBack}`);
         setNeoData(response.data);
       } catch (err) {
         setError('Failed to fetch NEO data.');
