@@ -22,7 +22,7 @@ Backend: [https://nasa-explorer-jamg.onrender.com](https://nasa-explorer-jamg.on
 
 ## Setup Instructions
 
-Backend setup
+### Backend setup
 ```bash
 cd backend
 npm install
@@ -31,7 +31,7 @@ npm install
 node server.js
 ```
 
-Frontend setup:
+### Frontend setup:
 ```bash
 cd frontend
 npm install
@@ -58,9 +58,14 @@ Adapts to desktop, tablet, and mobile screen sizes.
 ● **Error Handling & Loading States**  
 All features include fallback UI for failed requests or loading delays.  
 
-
-## NASA API  
+## Raunning locally
+### NASA API  
 You must register at https://api.nasa.gov to obtain your free API key and set it in your .env file.  
+
+### OpenAI API (for AI Summarization Feature)
+The app uses OpenAI's API to generate simplified summaries of complex NASA explanations (like those in the APOD section).  
+● Go to your API Keys page(https://platform.openai.com/account/api-keys) and generate a key  
+● Add it to your backend `.env` file OPENAI_API_KEY=[Add here]
 
 ## Highlights  
 ● Clean UI with FontAwesome icons  
@@ -82,7 +87,7 @@ Checked for:
 **Automated Testing**  
 added a backend unit test using Jest to ensure the /api/summarize route consistently returns a valid summary from the OpenAI API.  
 This test helps validate core AI functionality independently from the frontend and ensures reliability during further development.  
-To run backend tests:
+To run backend test locally:
 ```bash
 cd backend
 npm install
