@@ -95,6 +95,6 @@ npm test
 ● All axios API calls use process.env.REACT_APP_API_URL for environment compatibility  
 
 ## ScreenShots  
-**Test**  
-![image](https://github.com/user-attachments/assets/0b62f22f-0e43-457b-be58-21493752219f)
+**Test past**  
+![alt text](image.png)
 
